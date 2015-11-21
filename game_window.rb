@@ -1,4 +1,5 @@
 require 'gosu'
+require_relative 'box'
 
 class GameWindow < Gosu::Window
   attr_accessor :width, :height
@@ -7,16 +8,23 @@ class GameWindow < Gosu::Window
     @height = height
     super @width, @height
     self.caption = "Gosu Asteroids"
+    @box = Box.new(width/2, height/2, 10, 10, Gosu::Color::RED)
   end
 
   def update
+    if Gosu::button_down? Gosu::KbLeft
+      @box.move(-2, 0)
+    elsif Gosu::button_down? Gosu::KbRight
+      @box.move(2, 0)
+    elsif Gosu::button_down? Gosu::KbUp
+      @box.move(0, -2)
+    elsif Gosu::button_down? Gosu::KbDown
+      @box.move(0, 2)
+    end
   end
 
   def draw
-    x_center = width/2
-    y_center = height/2
-    square_color = Gosu::Color::RED
-    draw_quad(x_center, y_center, square_color, x_center, y_center+10, square_color, x_center + 10, y_center + 10, square_color, x_center+10, y_center, square_color, 0.0, :default)
+    draw_quad(@box.x, @box.y, @box.color, @box.x, @box.y + @box.height, @box.color, @box.x + @box.width, @box.y + @box.height, @box.color, @box.x + @box.width, @box.y, @box.color, 0.0, :default)
   end
 end
 
