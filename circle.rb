@@ -3,14 +3,14 @@
 class Circle
   attr_reader :columns, :rows, :color, :x, :y, :radius, :angle, :speed
 
-  def initialize(radius=10, window_width = 640, window_height = 480, color = Gosu::Color::RED)
+  def initialize(radius=10, window_width = 640, window_height = 480, color = Gosu::Color::RED, x=640/2, y=480/2, speed=0.0, angle=270.0)
     @radius = radius
     @columns = @rows = radius * 2
-    @x = window_width / 2 #center location by default
-    @y = window_height / 2
+    @x = x
+    @y = y
     @color = color
-    @speed = 0.0
-    @angle = 270.0
+    @speed = speed
+    @angle = angle
     lower_half = (0...radius).map do |y|
       x = Math.sqrt(radius**2 - y**2).round
       right_half = "#{"\xff" * x}#{"\x00" * (radius - x)}"
@@ -41,23 +41,6 @@ class Circle
 end
 
 class Bullet < Circle
-
-  def initialize(radius = 5, window_width = 640, window_height = 480, color = Gosu::Color::BLUE, x=0.0, y=0.0, speed=2.0, angle=0.0)
-    @radius = radius
-    @columns = @rows = radius * 2
-    @x = x
-    @y = y
-    @color = color
-    @speed = speed
-    @angle = angle
-    lower_half = (0...radius).map do |y|
-      x = Math.sqrt(radius**2 - y**2).round
-      right_half = "#{"\xff" * x}#{"\x00" * (radius - x)}"
-      "#{right_half.reverse}#{right_half}"
-    end.join
-    @blob = lower_half.reverse + lower_half
-    @blob.gsub!(/./) { |alpha| "\xff\xff\xff#{alpha}"}
-  end
 
   def move
     @angle = angle % 360.0

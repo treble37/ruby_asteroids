@@ -11,8 +11,11 @@ class GameWindow < Gosu::Window
     @height = height
     super @width, @height
     self.caption = "Gosu Asteroids"
-    @circle = Circle.new(10, width, height, Gosu::Color::RED)
+    ship_radius = 10
+    @circle = Circle.new(ship_radius, width, height, Gosu::Color::RED, width/2, height/2, 0.0, 270.0)
+    @ship_head = Circle.new(ship_radius/2, width, height, Gosu::Color::GREEN, width/2, height/2, 0.0, 270.0)
     @img_circle = Gosu::Image.new(self, @circle, false)
+    @img_ship_head = Gosu::Image.new(self, @ship_head, false)
     @enemy_circles = []
     @enemy_img_circles = []
     @bullets = []
@@ -54,6 +57,7 @@ class GameWindow < Gosu::Window
       image.draw @bullets[i].x, @bullets[i].y, 0, 1, 1, @bullets[i].color, :default
     end
     @img_circle.draw @circle.x,@circle.y, 0, 1, 1, @circle.color,:default
+    @img_ship_head.draw @circle.x,@circle.y, 0, 1, 1, @ship_head.color,:default
     @enemy_img_circles.each_with_index do |circle, i|
       circle.draw @enemy_circles[i].x, @enemy_circles[i].y, 0, 1, 1, @enemy_circles[i].color, :default
     end
