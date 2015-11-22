@@ -32,9 +32,9 @@ class GameWindow < Gosu::Window
     speed_step = 0.0
     angle_step = 0.0
     if Gosu::button_down? Gosu::KbLeft
-      angle_step = -0.5
+      angle_step = -2.0
     elsif Gosu::button_down? Gosu::KbRight
-      angle_step = 0.5
+      angle_step = 2.0
     elsif Gosu::button_down? Gosu::KbUp
       speed_step = 0.25
     elsif Gosu::button_down? Gosu::KbDown
@@ -51,6 +51,7 @@ class GameWindow < Gosu::Window
     end
     @circle.move(angle_step, speed_step, width, height)
     @ship_head.move(angle_step, speed_step, width, height)
+    asteroid_hit?
     close if collision?
   end
 
@@ -77,6 +78,23 @@ class GameWindow < Gosu::Window
       break if collision
     end
     collision
+  end
+
+  def asteroid_hit?
+    hit = false
+    @enemy_circles.each_with_index do |enemy, i|
+      @bullets.each do |bullet|
+        dx = (bullet.x - enemy.x)**2
+        dy = (bullet.y - enemy.y)**2
+        distance = Math.sqrt(dx + dy)
+        if (distance < (bullet.radius + enemy.radius))
+          hit = true
+          @enemy_circles.delete_at(i)
+          @enemy_img_circles.delete_at(i)
+        end
+      end
+    end
+    hit
   end
 
 end
