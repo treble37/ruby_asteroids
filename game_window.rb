@@ -13,7 +13,7 @@ class GameWindow < Gosu::Window
     self.caption = "Gosu Asteroids"
     ship_radius = 10
     @circle = Circle.new(ship_radius, width, height, Gosu::Color::RED, width/2, height/2, 0.0, 270.0)
-    @ship_head = Circle.new(ship_radius/2, width, height, Gosu::Color::GREEN, width/2, height/2, 0.0, 270.0)
+    @ship_head = Circle.new(ship_radius/2, width, height, Gosu::Color::GREEN, width/2 + ship_radius/2, height/2 + ship_radius/2, 0.0, 270.0)
     @img_circle = Gosu::Image.new(self, @circle, false)
     @img_ship_head = Gosu::Image.new(self, @ship_head, false)
     @enemy_circles = []
@@ -40,7 +40,8 @@ class GameWindow < Gosu::Window
     elsif Gosu::button_down? Gosu::KbDown
       speed_step = -0.25
     elsif Gosu::button_down? Gosu::KbSpace
-      bullet = Bullet.new(2, width, height, Gosu::Color::BLUE, @circle.x, @circle.y, @circle.speed + 2.0, @circle.angle)
+      bullet_radius = 2
+      bullet = Bullet.new(bullet_radius, width, height, Gosu::Color::BLUE, @circle.x + @ship_head.radius + bullet_radius, @circle.y + @ship_head.radius + bullet_radius, @circle.speed + 2.0, @circle.angle)
       @bullets << bullet
       @bullet_imgs << Gosu::Image.new(self, bullet, false)
     end
@@ -49,6 +50,7 @@ class GameWindow < Gosu::Window
       bullet = nil if !bullet.onscreen?(width, height)
     end
     @circle.move(angle_step, speed_step, width, height)
+    @ship_head.move(angle_step, speed_step, width, height)
     close if collision?
   end
 
@@ -57,7 +59,7 @@ class GameWindow < Gosu::Window
       image.draw @bullets[i].x, @bullets[i].y, 0, 1, 1, @bullets[i].color, :default
     end
     @img_circle.draw @circle.x,@circle.y, 0, 1, 1, @circle.color,:default
-    @img_ship_head.draw @circle.x,@circle.y, 0, 1, 1, @ship_head.color,:default
+    @img_ship_head.draw @ship_head.x + (@circle.radius)*Math.cos(@circle.angle*Math::PI/180.0).round(2), @ship_head.y + (@circle.radius)*Math.sin(@circle.angle*Math::PI/180).round(2), 0, 1, 1, @ship_head.color,:default
     @enemy_img_circles.each_with_index do |circle, i|
       circle.draw @enemy_circles[i].x, @enemy_circles[i].y, 0, 1, 1, @enemy_circles[i].color, :default
     end
