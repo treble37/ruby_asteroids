@@ -11,11 +11,12 @@ class GameWindow < Gosu::Window
     @height = height
     super @width, @height
     self.caption = "Gosu Asteroids"
-    #@box = Box.new(width/2, height/2, 10, 10, Gosu::Color::RED)
     @circle = Circle.new(10, width, height, Gosu::Color::RED)
     @img_circle = Gosu::Image.new(self, @circle, false)
     @enemy_circles = []
     @enemy_img_circles = []
+    @bullets = []
+    @bullet_imgs = []
     10.times do
       circle = Circle.new(12, width, height, Gosu::Color::WHITE)
       circle.randomize_location(width, height)
@@ -35,13 +36,24 @@ class GameWindow < Gosu::Window
       speed_step = 0.25
     elsif Gosu::button_down? Gosu::KbDown
       speed_step = -0.25
+    elsif Gosu::button_down? Gosu::KbSpace
+      bullet = Bullet.new(2, width, height, Gosu::Color::BLUE, @circle.x, @circle.y, @circle.speed + 2.0, @circle.angle)
+      @bullets << bullet
+      @bullet_imgs << Gosu::Image.new(self, bullet, false)
+    end
+    @bullets.each do |bullet|
+      bullet.move
+      bullet = nil if !bullet.onscreen?(width, height)
     end
     @circle.move(angle_step, speed_step, width, height)
     close if collision?
   end
 
   def draw
-    @img_circle.draw @circle.x,@circle.y,0,1,1,@circle.color,:default
+    @bullet_imgs.each_with_index do |image, i|
+      image.draw @bullets[i].x, @bullets[i].y, 0, 1, 1, @bullets[i].color, :default
+    end
+    @img_circle.draw @circle.x,@circle.y, 0, 1, 1, @circle.color,:default
     @enemy_img_circles.each_with_index do |circle, i|
       circle.draw @enemy_circles[i].x, @enemy_circles[i].y, 0, 1, 1, @enemy_circles[i].color, :default
     end
