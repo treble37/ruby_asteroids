@@ -1,5 +1,6 @@
 require 'gosu'
 require_relative 'box'
+require_relative 'circle'
 require 'pry'
 
 class GameWindow < Gosu::Window
@@ -9,33 +10,53 @@ class GameWindow < Gosu::Window
     @height = height
     super @width, @height
     self.caption = "Gosu Asteroids"
-    @box = Box.new(width/2, height/2, 10, 10, Gosu::Color::RED)
-    @enemy_boxes = []
+    #@box = Box.new(width/2, height/2, 10, 10, Gosu::Color::RED)
+    @circle = Circle.new(10, width, height, Gosu::Color::RED)
+    @img_circle = Gosu::Image.new(self, @circle, false)
+    @enemy_circles = []
+    @enemy_img_circles = []
     10.times do
-      box = Box.new(width/2, height/2, 5, 5, Gosu::Color::WHITE)
-      box.randomize_location(width, height)
-      @enemy_boxes << box
+      circle = Circle.new(12, width, height, Gosu::Color::WHITE)
+      circle.randomize_location(width, height)
+      @enemy_circles << circle
+      @enemy_img_circles << Gosu::Image.new(self, circle, false)
     end
   end
 
   def update
     if Gosu::button_down? Gosu::KbLeft
-      @box.move(-2, 0, width, height)
+      @circle.move(-2, 0, width, height)
     elsif Gosu::button_down? Gosu::KbRight
-      @box.move(2, 0, width, height)
+      @circle.move(2, 0, width, height)
     elsif Gosu::button_down? Gosu::KbUp
-      @box.move(0, -2, width, height)
+      @circle.move(0, -2, width, height)
     elsif Gosu::button_down? Gosu::KbDown
-      @box.move(0, 2, width, height)
+      @circle.move(0, 2, width, height)
     end
+    close if collision?
   end
 
   def draw
-    draw_quad(@box.x, @box.y, @box.color, @box.x, @box.y + @box.height, @box.color, @box.x + @box.width, @box.y + @box.height, @box.color, @box.x + @box.width, @box.y, @box.color, 0.0, :default)
-    @enemy_boxes.each do |enemy_box|
-      draw_quad(enemy_box.x, enemy_box.y, enemy_box.color, enemy_box.x, enemy_box.y + enemy_box.height, enemy_box.color, enemy_box.x + enemy_box.width, enemy_box.y + enemy_box.height, enemy_box.color, enemy_box.x + enemy_box.width, enemy_box.y, enemy_box.color, 0.0, :default)
+    @img_circle.draw @circle.x,@circle.y,0,1,1,@circle.color,:default
+    @enemy_img_circles.each_with_index do |circle, i|
+      circle.draw @enemy_circles[i].x, @enemy_circles[i].y, 0, 1, 1, @enemy_circles[i].color, :default
     end
   end
+
+  def collision?
+    collision = false
+    @enemy_circles.each do |enemy|
+      dx = (@circle.x - enemy.x)**2
+      dy = (@circle.y - enemy.y)**2
+      distance = Math.sqrt(dx+dy)
+      if (distance < (@circle.radius + enemy.radius))
+        collision = true
+      end
+      break if collision
+    end
+    collision
+  end
+
 end
 
 window = GameWindow.new
