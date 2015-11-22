@@ -5,6 +5,7 @@ require 'pry'
 
 class GameWindow < Gosu::Window
   attr_accessor :width, :height
+
   def initialize(width = 640, height = 480)
     @width = width
     @height = height
@@ -24,15 +25,18 @@ class GameWindow < Gosu::Window
   end
 
   def update
+    speed_step = 0.0
+    angle_step = 0.0
     if Gosu::button_down? Gosu::KbLeft
-      @circle.move(-2, 0, width, height)
+      angle_step = -0.5
     elsif Gosu::button_down? Gosu::KbRight
-      @circle.move(2, 0, width, height)
+      angle_step = 0.5
     elsif Gosu::button_down? Gosu::KbUp
-      @circle.move(0, -2, width, height)
+      speed_step = 0.25
     elsif Gosu::button_down? Gosu::KbDown
-      @circle.move(0, 2, width, height)
+      speed_step = -0.25
     end
+    @circle.move(angle_step, speed_step, width, height)
     close if collision?
   end
 
