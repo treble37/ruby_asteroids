@@ -23,6 +23,7 @@ class Circle
   def move(angle_step, speed_step, x_boundary, y_boundary)
     @angle = (angle + angle_step) % 360
     @speed = [(speed + speed_step), 0].max
+    @speed = [@speed, 7].min
     @x = (x + speed * Math.cos(angle*Math::PI/180.0).round(2)) % x_boundary
     @y = (y + speed * Math.sin(angle*Math::PI/180.0).round(2)) % y_boundary
   end
