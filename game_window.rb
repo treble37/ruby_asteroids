@@ -20,8 +20,9 @@ class GameWindow < Gosu::Window
     @enemy_img_circles = []
     @bullets = []
     @bullet_imgs = []
+    prng = Random.new
     10.times do
-      circle = Circle.new(12, width, height, Gosu::Color::WHITE)
+      circle = Circle.new(12, width, height, Gosu::Color::WHITE, 0, 0, 1.0, prng.rand(1..359))
       circle.randomize_location(width, height)
       @enemy_circles << circle
       @enemy_img_circles << Gosu::Image.new(self, circle, false)
@@ -48,6 +49,10 @@ class GameWindow < Gosu::Window
     @bullets.each do |bullet|
       bullet.move
       bullet = nil if !bullet.onscreen?(width, height)
+    end
+    prng_move = Random.new
+    @enemy_circles.each do |enemy_circle|
+      enemy_circle.move(0, 0.0, width, height)
     end
     @circle.move(angle_step, speed_step, width, height)
     @ship_head.move(angle_step, speed_step, width, height)
