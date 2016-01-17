@@ -87,6 +87,7 @@ class GameWindow < Gosu::Window
 
   def asteroid_hit?
     hit = false
+    delete_index = nil
     @enemy_circles.each_with_index do |enemy, i|
       @bullets.each do |bullet|
         dx = (bullet.x - enemy.x)**2
@@ -94,26 +95,25 @@ class GameWindow < Gosu::Window
         distance = Math.sqrt(dx + dy)
         if (distance < (bullet.radius + enemy.radius))
           hit = true
-          asteroid_split_or_delete(i)
+          delete_index = asteroid_split_or_delete_index(i)
         end
       end
+    end
+    if delete_index
+      @enemy_circles.delete_at(delete_index)
+      @enemy_img_circles.delete_at(delete_index)
     end
     hit
   end
 
-  def asteroid_split_or_delete(i)
-    min_delete_radius = 2
+  def asteroid_split_or_delete_index(i)
+    min_delete_radius = 4
     new_enemy_circle_radius = @enemy_circles[i].radius / 2
-    if (new_enemy_circle_radius < min_delete_radius)
-      @enemy_circles.delete_at(i)
-      @enemy_img_circles.delete_at(i)
-    else
+    if (new_enemy_circle_radius > min_delete_radius)
       circle_x = @enemy_circles[i].x
       circle_y = @enemy_circles[i].y
       circle_speed = @enemy_circles[i].speed
-      circle_angle = @enemy_circles[i].angle
-      @enemy_circles.delete_at(i)
-      @enemy_img_circles.delete_at(i)
+      circle_angle = @enemy_circles[i].angle + 90
       (0..1).each do |j|
         mult = (j%2==0) ? 1 : -1
         circle = Circle.new(new_enemy_circle_radius, width, height, Gosu::Color::WHITE, circle_x, circle_y, circle_speed, mult*circle_angle)
@@ -121,6 +121,7 @@ class GameWindow < Gosu::Window
         @enemy_img_circles << Gosu::Image.new(self, circle, false)
       end
     end
+    i
   end
 
 end
