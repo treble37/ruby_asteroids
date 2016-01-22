@@ -37,7 +37,7 @@ class GameWindow < Gosu::Window
     elsif Gosu::button_down? Gosu::KbRight
       angle_step = 2.0
     elsif Gosu::button_down? Gosu::KbUp
-      speed_step = 0.25
+      speed_step = 3*(0.25)**2 - 2*(0.25)**3 #smooth step curve
     elsif Gosu::button_down? Gosu::KbDown
       speed_step = -0.25
     elsif Gosu::button_down? Gosu::KbSpace
