@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
 
-gem 'gosu'
-gem 'pry'
+# Specify your gem's dependencies in ruby_asteroids.gemspec
+gemspec
