@@ -1,6 +1,7 @@
 require 'gosu'
-require_relative 'box'
-require_relative 'circle'
+require 'ruby_asteroids/box'
+require 'ruby_asteroids/circle'
+require "ruby_asteroids/version"
 require 'pry'
 
 class GameWindow < Gosu::Window
@@ -125,6 +126,3 @@ class GameWindow < Gosu::Window
   end
 
 end
-
-window = GameWindow.new
-window.show
