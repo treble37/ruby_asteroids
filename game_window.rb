@@ -32,21 +32,11 @@ class GameWindow < Gosu::Window
     elsif Gosu::button_down? Gosu::KbDown
       speed_step = -0.25
     elsif Gosu::button_down? Gosu::KbSpace
-      bullet_radius = 2
-      bullet = Bullet.new(bullet_radius, width, height, Gosu::Color::BLUE, @ship_body.x + @ship_head.radius + bullet_radius, @ship_body.y + @ship_head.radius + bullet_radius, @ship_body.speed + 2.0, @ship_body.angle)
-      @bullets << bullet
-      @bullet_imgs << Gosu::Image.new(self, bullet, false)
+      create_bullets
     end
-    @bullets.each do |bullet|
-      bullet.move
-      bullet = nil if !bullet.onscreen?(width, height)
-    end
-    prng_move = Random.new
-    @asteroids.each do |enemy_circle|
-      enemy_circle.move(0, 0.0, width, height)
-    end
-    @ship_body.move(angle_step, speed_step, width, height)
-    @ship_head.move(angle_step, speed_step, width, height)
+    move_bullets
+    move_asteroids
+    move_ship(angle_step, speed_step)
     asteroid_hit?
     close if collision?
   end
@@ -99,15 +89,15 @@ class GameWindow < Gosu::Window
 
   def asteroid_split_or_delete_index(i)
     min_delete_radius = 4
-    new_enemy_circle_radius = @asteroids[i].radius / 2
-    if (new_enemy_circle_radius > min_delete_radius)
+    new_asteroid_radius = @asteroids[i].radius / 2
+    if (new_asteroid_radius > min_delete_radius)
       circle_x = @asteroids[i].x
       circle_y = @asteroids[i].y
       circle_speed = @asteroids[i].speed
       circle_angle = @asteroids[i].angle + 90
       (0..1).each do |j|
         mult = (j%2==0) ? 1 : -1
-        circle = Circle.new(new_enemy_circle_radius, width, height, Gosu::Color::WHITE, circle_x, circle_y, circle_speed, mult*circle_angle)
+        circle = Circle.new(new_asteroid_radius, width, height, Gosu::Color::WHITE, circle_x, circle_y, circle_speed, mult*circle_angle)
         @asteroids << circle
         @img_asteroids << Gosu::Image.new(self, circle, false)
       end
@@ -137,6 +127,32 @@ class GameWindow < Gosu::Window
       img_asteroids << Gosu::Image.new(self, circle, false)
     end
     [asteroids, img_asteroids]
+  end
+
+  def create_bullets
+    bullet_radius = 2
+    bullet = Bullet.new(bullet_radius, width, height, Gosu::Color::BLUE, @ship_body.x + @ship_head.radius + bullet_radius, @ship_body.y + @ship_head.radius + bullet_radius, @ship_body.speed + 2.0, @ship_body.angle)
+    @bullets << bullet
+    @bullet_imgs << Gosu::Image.new(self, bullet, false)
+  end
+
+  def move_bullets
+    @bullets.each do |bullet|
+      bullet.move
+      bullet = nil if !bullet.onscreen?(width, height)
+    end
+  end
+
+  def move_asteroids
+    prng_move = Random.new
+    @asteroids.each do |asteroid|
+      asteroid.move(0, 0.0, width, height)
+    end
+  end
+
+  def move_ship(angle_step, speed_step)
+    @ship_body.move(angle_step, speed_step, width, height)
+    @ship_head.move(angle_step, speed_step, width, height)
   end
 
 end
